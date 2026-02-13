@@ -43,3 +43,23 @@ def criar_postagem(request):
         form = PostagemForm()
     
     return render(request, 'dashboard/criar_postagem.html', {'form': form})
+
+@login_required
+def editar_postagem(request, slug):
+    # Busca a postagem ou dá erro 404 se não existir
+    postagem = get_object_or_404(Postagem, slug=slug)
+    
+    # Segurança extra: Só o autor da matéria pode editá-la!
+    if postagem.autor != request.user.perfil_equipe:
+        return redirect('dashboard_home')
+
+    if request.method == 'POST':
+        # O 'instance=postagem' faz o Django preencher o form com os dados antigos
+        form = PostagemForm(request.POST, request.FILES, instance=postagem)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_home')
+    else:
+        form = PostagemForm(instance=postagem)
+    
+    return render(request, 'dashboard/criar_postagem.html', {'form': form, 'editando': True})

@@ -5,14 +5,15 @@
     <p>Bem-vindo, <b>{{ perfil.usuario.get_full_name|default:perfil.usuario.username }}</b>!</p>
     
     <nav>
-        <a href="/logout/">[ Sair do Sistema ]</a>
+        <a href="{% url 'logout' %}" style="color: red;">[ Sair do Sistema ]</a>
     </nav>
 
     <hr>
+
     <h3>Minhas Matérias</h3>
-    <table border="1">
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; text-align: left;">
         <thead>
-            <tr>
+            <tr style="background-color: #f2f2f2;">
                 <th>Título</th>
                 <th>Status</th>
                 <th>Views</th>
@@ -25,13 +26,23 @@
                 <td>{{ post.titulo }}</td>
                 <td>{{ post.get_status_display }}</td>
                 <td>{{ post.visualizacoes }}</td>
-                <td><a href="#">Editar</a></td> </tr>
+                <td>
+                    <a href="{% url 'editar_postagem' post.slug %}" class="btn-editar">Editar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Você ainda não publicou nenhuma matéria.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
     
     <br>
-    <button><a href="{% url 'criar_postagem' %}">
-    <button>+ Escrever Nova Matéria</button>
-</a></button>
+
+    <a href="{% url 'criar_postagem' %}">
+        <button type="button" style="padding: 10px 20px; cursor: pointer;">
+            + Escrever Nova Matéria
+        </button>
+    </a>
 {% endblock %}

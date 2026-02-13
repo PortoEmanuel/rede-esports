@@ -157,3 +157,7 @@ LOGGING = {
         'level': 'INFO', # Mude para 'DEBUG' se quiser ver ATÉ as queries do banco
     },
 }
+
+
+LOGOUT_ON_GET = True
+LOGOUT_REDIRECT_URL = 'home'

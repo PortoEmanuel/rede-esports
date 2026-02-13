@@ -5,6 +5,9 @@ from django.conf.urls.static import static
 from noticias.views import home, post_detalhe, criar_postagem
 from equipe.views import lista_equipe, perfil_colaborador, dashboard_home
 from django.contrib.auth import views as auth_views
+from equipe.views import logout_view
+from noticias.views import editar_postagem
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,9 +17,11 @@ urlpatterns = [
     path('equipe/', lista_equipe, name='lista_equipe'),
     path('equipe/<str:username>/', perfil_colaborador, name='perfil_colaborador'),
     path('login/', auth_views.LoginView.as_view(template_name='dashboard/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', logout_view, name='logout'),
     path('dashboard/', dashboard_home, name='dashboard_home'),
     path('dashboard/novo/', criar_postagem, name='criar_postagem'),
+    path('dashboard/editar/<slug:slug>/', editar_postagem, name='editar_postagem'),
+
 ]
 
 # Isso aqui permite que o Django "sirva" as imagens que você upar no artigo

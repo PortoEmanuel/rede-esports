@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import PerfilColaborador
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 
 def lista_equipe(request):
@@ -42,3 +44,8 @@ def dashboard_home(request):
         return render(request, 'dashboard/erro_acesso.html', {
             'mensagem': 'Seu usuário não possui um perfil de colaborador ativo.'
         })
+    
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
