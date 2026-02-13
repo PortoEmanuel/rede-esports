@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Últimas Notícias</h1>
+    
+    {% for post in postagens %}
+        <article>
+            <h2><a href="/noticia/{{ post.slug }}/">{{ post.titulo }}</a></h2>
+            <p>Por: <a href="/equipe/{{ post.autor.usuario.username }}/">{{ post.autor.usuario.username }}</a> |  Em: {{ post.categoria.nome }}</p>
+            <p>{{ post.subtitulo }}</p>
+            <small>Visualizações: {{ post.visualizacoes }} | Data: {{ post.data_publicacao }}</small>
+        </article>
+        <hr style="border: 0; border-top: 1px dashed #ccc;">
+    {% empty %}
+        <p>Nenhuma notícia publicada ainda.</p>
+    {% endfor %}
+{% endblock %}

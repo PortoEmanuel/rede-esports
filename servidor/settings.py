@@ -22,6 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-$x4x25*=ksj06rr^vf995e6)fn923do(l&=+pz&-of4$kggddl'
 
+# Quando logar, vai para o dashboard
+LOGIN_REDIRECT_URL = 'dashboard_home'
+
+# Se tentar acessar o dashboard sem estar logado, joga para o login
+LOGIN_URL = 'login'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -34,6 +40,8 @@ INSTALLED_APPS = [
     'core',
     'equipe',
     'comunidade',
+    'noticias',
+    'django_summernote',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +66,7 @@ ROOT_URLCONF = 'servidor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,3 +136,24 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO', # Mude para 'DEBUG' se quiser ver ATÉ as queries do banco
+    },
+}

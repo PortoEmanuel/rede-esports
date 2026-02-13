@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Perfil de {{ colaborador.usuario.username }}</h1>
+    <p><b>Nome:</b> {{ colaborador.usuario.get_full_name }}</p>
+    <p><b>Cargos:</b> 
+        {% for cargo in colaborador.cargos.all %}
+            {{ cargo.nome }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+    <hr>
+    <h3>Matérias escritas por este autor:</h3>
+    <ul>
+    {% for noticia in noticias %}
+        <li>
+            <a href="/noticia/{{ noticia.slug }}/">{{ noticia.titulo }}</a> 
+            ({{ noticia.data_publicacao|date:"d/m/Y" }})
+        </li>
+    {% empty %}
+        <li>Este colaborador ainda não publicou matérias.</li>
+    {% endfor %}
+    </ul>
+    
+    <p><a href="/equipe/">← Voltar para a lista da equipe</a></p>
+{% endblock %}

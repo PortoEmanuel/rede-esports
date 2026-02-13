@@ -20,3 +20,17 @@ A **Rede Esports** é uma plataforma robusta projetada para gerenciar ecossistem
 - **Banco de Dados:** SQLite (Desenvolvimento)
 
 
+## 🆕 Novidades da Versão (Sprint Atual)
+
+- **Dashboard do Redator:** Ambiente logado exclusivo para criação e edição de conteúdos fora do painel administrativo.
+- **Editor Rich Text (Summernote):** Interface de escrita profissional com suporte a formatação, imagens e links diretamente no front-end.
+- **Métricas de Engajamento:** Contador de visualizações por notícia e listagem de matérias por autor.
+- **Fluxo de Autenticação Customizado:** Páginas de Login/Logout personalizadas para a equipe.
+
+## ⚙️ Como executar
+
+1. Clone o repositório: `git clone https://github.com/seu-usuario/rede-esports.git`
+2. Ative seu ambiente virtual: `source .venv/bin/activate` (Linux) ou `.venv\Scripts\activate` (Windows)
+3. Instale as dependências: `pip install -r requirements.txt`
+4. Aplique as migrações: `python manage.py migrate`
+5. Inicie o servidor: `python manage.py runserver`

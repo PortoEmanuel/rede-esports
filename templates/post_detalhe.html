@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <article>
+        <h1>{{ post.titulo }}</h1>
+        <p><i>{{ post.subtitulo }}</i></p>
+        <hr>
+        <p>Postado em: {{ post.data_publicacao }} | Categoria: {{ post.categoria.nome }}</p>
+        <p>Visualizações: <b>{{ post.visualizacoes }}</b></p>
+        
+        <img src="{{ post.capa.url }}" alt="{{ post.titulo }}" style="max-width: 500px;">
+        
+        <div class="conteudo-do-artigo">
+            {{ post.conteudo|safe }}
+        </div>
+        
+        <hr>
+        <h3>Sobre o Autor</h3>
+        <p>Escrito por: <b><a href="/equipe/{{ post.autor.usuario.username }}/">{{ post.autor.usuario.get_full_name|default:post.autor.usuario.username }}</a></b></p>
+    </article>
+
+    <p><a href="/">← Voltar para a Home</a></p>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Painel de Controle</h1>
+    <p>Bem-vindo, <b>{{ perfil.usuario.get_full_name|default:perfil.usuario.username }}</b>!</p>
+    
+    <nav>
+        <a href="/logout/">[ Sair do Sistema ]</a>
+    </nav>
+
+    <hr>
+    <h3>Minhas Matérias</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Status</th>
+                <th>Views</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in postagens %}
+            <tr>
+                <td>{{ post.titulo }}</td>
+                <td>{{ post.get_status_display }}</td>
+                <td>{{ post.visualizacoes }}</td>
+                <td><a href="#">Editar</a></td> </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <br>
+    <button><a href="{% url 'criar_postagem' %}">
+    <button>+ Escrever Nova Matéria</button>
+</a></button>
+{% endblock %}
