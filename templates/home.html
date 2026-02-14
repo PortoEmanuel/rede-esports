@@ -1,17 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Últimas Notícias</h1>
+<div class="container" style="max-width: 1000px; margin: 20px auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <h1 style="border-bottom: 3px solid #333; padding-bottom: 10px; margin-bottom: 30px;">
+        Últimas Notícias da Rede Esports
+    </h1>
     
-    {% for post in postagens %}
-        <article>
-            <h2><a href="/noticia/{{ post.slug }}/">{{ post.titulo }}</a></h2>
-            <p>Por: <a href="/equipe/{{ post.autor.usuario.username }}/">{{ post.autor.usuario.username }}</a> |  Em: {{ post.categoria.nome }}</p>
-            <p>{{ post.subtitulo }}</p>
-            <small>Visualizações: {{ post.visualizacoes }} | Data: {{ post.data_publicacao }}</small>
-        </article>
-        <hr style="border: 0; border-top: 1px dashed #ccc;">
-    {% empty %}
-        <p>Nenhuma notícia publicada ainda.</p>
-    {% endfor %}
+    <div class="noticias-lista">
+        {% for post in postagens %}
+            <article style="display: flex; gap: 20px; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+                
+                {% if post.capa %}
+                <div style="flex: 0 0 300px;">
+                    <a href="{% url 'post_detalhe' post.slug %}">
+                        <img src="{{ post.capa.url }}" alt="{{ post.titulo }}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                    </a>
+                </div>
+                {% endif %}
+
+                <div style="flex: 1;">
+                    <span style="background-color: {{ post.categoria.cor_hex }}; color: #fff; padding: 3px 10px; font-size: 12px; font-weight: bold; border-radius: 4px; text-transform: uppercase;">
+                        {{ post.categoria.nome }}
+                    </span>
+
+                    <h2 style="margin: 15px 0 10px 0;">
+                        <a href="{% url 'post_detalhe' post.slug %}" style="text-decoration: none; color: #1a1a1a; font-size: 1.6rem;">
+                            {{ post.titulo }}
+                        </a>
+                    </h2>
+
+                    <p style="color: #444; font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px;">
+                        {{ post.subtitulo }}
+                    </p>
+
+                    <div style="color: #777; font-size: 0.9rem;">
+                        Por: <strong style="color: #222;">{{ post.autor.usuario.get_full_name|default:post.autor.usuario.username }}</strong> 
+                        em {{ post.data_publicacao|date:"d/m/Y" }}
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <p>Ainda não temos notícias publicadas.</p>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

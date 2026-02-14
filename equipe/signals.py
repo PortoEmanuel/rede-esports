@@ -1,16 +1,17 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from core.models import Usuario  # Verifique se o seu modelo de user está aqui
+from django.conf import settings
 from .models import PerfilColaborador
 
-@receiver(post_save, sender=Usuario)
-def criar_perfil_automatico(sender, instance, created, **kwargs):
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def gerenciar_perfil_usuario(sender, instance, created, **kwargs):
+    """
+    Cria um PerfilColaborador automaticamente quando um novo Usuario é criado
+    se o usuário for marcado como parte da equipe.
+    """
     if created:
-        # Se um novo usuário foi criado, cria um perfil para ele
         PerfilColaborador.objects.create(usuario=instance)
-
-@receiver(post_save, sender=Usuario)
-def salvar_perfil_automatico(sender, instance, **kwargs):
-    # Garante que se o usuário for atualizado, o perfil também seja salvo
-    if hasattr(instance, 'perfil_equipe'):
-        instance.perfil_equipe.save()
+    else:
+        # Se o perfil já existir, apenas garante que ele seja salvo
+        if hasattr(instance, 'perfil_equipe'):
+            instance.perfil_equipe.save()

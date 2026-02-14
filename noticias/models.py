@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from equipe.models import PerfilColaborador 
+from equipe.models import PerfilColaborador, FotoGaleria 
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -16,28 +16,20 @@ class Categoria(models.Model):
         return self.nome
 
 class Postagem(models.Model):
-    STATUS_CHOICES = (
-        ('rascunho', 'Rascunho'),
-        ('publicado', 'Publicado'),
-    )
+    STATUS_CHOICES = (('rascunho', 'Rascunho'), ('publicado', 'Publicado'))
 
     titulo = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     subtitulo = models.TextField(help_text="O 'Lead' que aparece na home")
     conteudo = models.TextField() 
     
-    # CONEXÃO CORRIGIDA: Apontando para PerfilColaborador
-    autor = models.ForeignKey(
-        PerfilColaborador, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        related_name='artigos'
-    )
-    
+    autor = models.ForeignKey(PerfilColaborador, on_delete=models.SET_NULL, null=True, related_name='artigos')
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='postagens')
-    capa = models.ImageField(upload_to='noticias/capas/')
-    meta_description = models.CharField(max_length=160, help_text="Descrição para o Google (SEO)")
     
+    # Capa opcional e vinda da Galeria
+    capa = models.ForeignKey(FotoGaleria, on_delete=models.SET_NULL, null=True, blank=True, related_name='postagens_usadas')
+    
+    meta_description = models.CharField(max_length=160, help_text="Descrição para o Google (SEO)")
     visualizacoes = models.PositiveIntegerField(default=0)
     destaque = models.BooleanField(default=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='rascunho')

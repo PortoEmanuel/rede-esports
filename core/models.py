@@ -7,7 +7,17 @@ class Usuario(AbstractUser):
     is_membro = models.BooleanField('Membro da Comunidade', default=True)
 
     # Campo de controle interno
-    email = models.EmailField('E-mail', unique=True)
+    email = models.EmailField(
+        unique=True, 
+        blank=False, 
+        null=False, 
+        error_messages={
+            'unique': "Um usuário com este e-mail já existe.",
+        }
+    )
+    
+    
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     # Usaremos o e-mail como login principal no futuro.
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']

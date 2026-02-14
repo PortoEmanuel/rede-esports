@@ -1,42 +1,52 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Postagem
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Postagem, Categoria
 from .forms import PostagemForm
 from django.contrib.auth.decorators import login_required
 from django.utils.text import slugify
+from equipe.models import PerfilColaborador
 
 def home(request):
-    # Trocamos 'order_set' por 'order_by'
+    # Filtra apenas o que está publicado e ordena pela data mais recente
     postagens = Postagem.objects.filter(status='publicado').order_by('-data_publicacao')
-    
     return render(request, 'home.html', {'postagens': postagens})
-
 
 def post_detalhe(request, slug):
     postagem = get_object_or_404(Postagem, slug=slug, status='publicado')
     
-    session_key = f'visualizado_{postagem.id}'
-
+    # Sistema de visualizações baseado em sessão
+    # Ele impede que o mesmo usuário dê F5 e gere 1000 visualizações
+    session_key = f'post_viewed_{postagem.id}'
+    
     if not request.session.get(session_key):
         postagem.visualizacoes += 1
-        postagem.save()
+        # O update_fields garante que o Django salve APENAS as visualizações no banco
+        postagem.save(update_fields=['visualizacoes'])
         request.session[session_key] = True
     
     return render(request, 'post_detalhe.html', {'post': postagem})
 
-
 @login_required
 def criar_postagem(request):
+    # Busca o colaborador logado
+    colaborador = get_object_or_404(PerfilColaborador, usuario=request.user, ativo=True)
+
     if request.method == 'POST':
-        form = PostagemForm(request.POST, request.FILES)
-        if form.is_valid(): # <--- O fix está aqui!
+        form = PostagemForm(request.POST)
+        if form.is_valid():
             post = form.save(commit=False)
-            post.autor = request.user.perfil_equipe
+            post.autor = colaborador
             
-            # Gera o slug automaticamente se estiver vazio
+            # Lógica para criar Categoria Nova na hora
+            nome_nova_cat = form.cleaned_data.get('nova_categoria')
+            if nome_nova_cat:
+                # get_or_create evita duplicar categorias com o mesmo nome
+                nova_cat, created = Categoria.objects.get_or_create(nome=nome_nova_cat)
+                post.categoria = nova_cat
+            
+            # Gera o slug se não existir
             if not post.slug:
                 post.slug = slugify(post.titulo)
-                
+            
             post.save()
             return redirect('dashboard_home')
     else:
@@ -46,20 +56,31 @@ def criar_postagem(request):
 
 @login_required
 def editar_postagem(request, slug):
-    # Busca a postagem ou dá erro 404 se não existir
     postagem = get_object_or_404(Postagem, slug=slug)
-    
-    # Segurança extra: Só o autor da matéria pode editá-la!
-    if postagem.autor != request.user.perfil_equipe:
+    colaborador = get_object_or_404(PerfilColaborador, usuario=request.user, ativo=True)
+
+    # Segurança: Só o autor edita
+    if postagem.autor != colaborador:
         return redirect('dashboard_home')
 
     if request.method == 'POST':
-        # O 'instance=postagem' faz o Django preencher o form com os dados antigos
-        form = PostagemForm(request.POST, request.FILES, instance=postagem)
+        form = PostagemForm(request.POST, instance=postagem)
         if form.is_valid():
-            form.save()
+            post = form.save(commit=False)
+            
+            # Também permite criar nova categoria ao editar
+            nome_nova_cat = form.cleaned_data.get('nova_categoria')
+            if nome_nova_cat:
+                nova_cat, created = Categoria.objects.get_or_create(nome=nome_nova_cat)
+                post.categoria = nova_cat
+                
+            post.save()
             return redirect('dashboard_home')
     else:
         form = PostagemForm(instance=postagem)
     
-    return render(request, 'dashboard/criar_postagem.html', {'form': form, 'editando': True})
+    return render(request, 'dashboard/criar_postagem.html', {
+        'form': form, 
+        'editando': True,
+        'postagem': postagem
+    })

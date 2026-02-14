@@ -5,4 +5,4 @@ class EquipeConfig(AppConfig):
     name = 'equipe'
 
     def ready(self):
-        import equipe.signals  # Isso aqui ativa a mágica
+        import equipe.signals  # Carrega os sinais ao iniciar

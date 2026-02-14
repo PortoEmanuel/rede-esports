@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel da Equipe - Rede Esports</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 12px; border: none; }
+        .sidebar-perfil { background: white; padding: 20px; border-radius: 12px; }
+        .badge-cargo { font-size: 0.8rem; padding: 5px 12px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">REDE ESPORTS</a>
+        <div class="text-white small">
+            Olá, {{ perfil.usuario.username }} | <a href="{% url 'logout' %}" class="text-danger decoration-none">Sair</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="sidebar-perfil shadow-sm text-center mb-4">
+                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person-fill fs-1 text-secondary"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ perfil.usuario.username }}</h4>
+                <div class="mb-3">
+                    {% for cargo in cargos_lista %}
+                        <span class="badge bg-primary badge-cargo">{{ cargo }}</span>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <h5 class="mb-0 fw-bold">{{ total_visualizacoes }}</h5>
+                        <small class="text-muted">Views Totais</small>
+                    </div>
+                </div>
+                {% if e_escritor %}
+                <div class="mt-4">
+                    <a href="{% url 'criar_postagem' %}" class="btn btn-success w-100 py-2 fw-bold">
+                        <i class="bi bi-pencil-square"></i> Escrever Nova Matéria
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            
+            {% if e_fotografo %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-camera"></i> Área do Fotógrafo</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'upload_foto' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Título da Foto</label>
+                                <input type="text" name="titulo" class="form-control" placeholder="Ex: Final do Gauntlet" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Arquivo de Imagem</label>
+                                <input type="file" name="imagem" class="form-control" accept="image/*" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary px-4 fw-bold">Fazer Upload</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Minhas Contribuições</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        {% for foto in minhas_fotos %}
+                        <div class="col-md-4 col-6">
+                            <div class="position-relative">
+                                <img src="{{ foto.imagem.url }}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                <div class="small mt-1 text-truncate">{{ foto.titulo }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Nenhuma foto enviada ainda.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if e_escritor %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-journal-text text-success"></i> Minhas Matérias</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Matéria</th>
+                                    <th>Views</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for post in postagens %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ post.titulo }}</div>
+                                        <small class="text-muted">{{ post.data_publicacao|date:"d/m/Y" }}</small>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark">{{ post.visualizacoes }}</span></td>
+                                    <td>
+                                        {% if post.status == 'publicado' %}
+                                            <span class="badge bg-success">Publicado</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Rascunho</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'editar_postagem' post.slug %}" class="btn btn-sm btn-outline-primary px-3">Editar</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4">Nenhuma matéria criada.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<footer class="text-center mt-5 pb-4 text-muted small">
+    Rede Esports © 2026 - Painel de Controle de Conteúdo
+</footer>
+
+</body>
+</html>
