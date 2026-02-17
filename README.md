@@ -29,8 +29,8 @@ A **Rede Esports** é uma plataforma robusta projetada para gerenciar ecossistem
 
 ## ⚙️ Como executar
 
-1. Clone o repositório: `git clone https://github.com/seu-usuario/rede-esports.git`
-2. Ative seu ambiente virtual: `source .venv/bin/activate` (Linux) ou `.venv\Scripts\activate` (Windows)
+1. Clone o repositório: `git clone https://github.com/portoemanuel/rede-esports.git`
+2. Ative seu ambiente virtual `source .venv/bin/activate` (Linux) ou `.venv\Scripts\activate` (Windows)
 3. Instale as dependências: `pip install -r requirements.txt`
 4. Aplique as migrações: `python manage.py migrate`
 5. Inicie o servidor: `python manage.py runserver`
